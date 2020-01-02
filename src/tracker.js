@@ -18,9 +18,43 @@ function tracker(window, endpoint) {
 
   // Filter out any bots we're already sure about before sending them to our
   // tracking server.
-  if (!nav.userAgent || nav.userAgent.search(/(bot|spider|crawl)/gi) > -1) {
+  if (!nav.userAgent || nav.userAgent.search(/(bot|crawl|spider)/gi) > -1) {
     return warn("Not tracking request from bots");
   }
+
+  const parseUrlParams = params => {
+    // Try to use the built in URLSearchParams parser for browsers.
+    try {
+      return new URLSearchParams(params);
+    }
+      // Polyfill to something custom. At least Internet Explorer requires this.
+    catch {
+      const getParam = param => {
+        const reFindValue = new RegExp("[?&](" + param + ")=([^?&]+)", "gi");
+        // Find the desired parameter with regular expressions.
+        // Convert null from `match` to an empty array for `map`.
+        return (params.match(reFindValue) || [])
+          // Match the matches to their values only.
+          .map(function(m) {
+            return m.split("=")[1];
+          })
+          // Finally return the first value found.
+          .shift();
+      };
+
+      // Return an object with `.get` so its signature matches
+      // URLSearchParams.
+      return {
+        get: getParam,
+      }
+    }
+  };
+
+  // Allow retrieving values from the query string.
+  // TODO: Possibly don't use URLSearchParams here to allow also tracking utm_
+  //    prefixed strings.
+  const query = parseUrlParams(document.location.search.substring(1));
+
 }
 
 export default tracker;
