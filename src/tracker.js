@@ -55,6 +55,12 @@ function tracker(window, endpoint) {
   //    prefixed strings.
   const query = parseUrlParams(document.location.search.substring(1));
 
+  // The timezone detection can error on some platforms where resolvedOptions
+  // is not a function. Tracking should continue regardless.
+  let timezone;
+  try {
+    timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch (e) {}
 }
 
 export default tracker;
