@@ -193,36 +193,44 @@ function trackRequest(window, endpoint) {
     return warn("Not tracking request from bots");
   }
 
-  const { lightBeacon, pageview } = createTracker(window, endpoint);
+  try {
+    const {lightBeacon, pageview} = createTracker(window, endpoint);
 
-  // Safari on iOS < 13 has issues with the Beacon API so we don't use it there.
-  if (typeof window.navigator.sendBeacon !== "undefined" &&
-    /ip(hone|ad)(.*)os\s([1-9]|1[0-2])_/i.test(window.navigator.userAgent) === false) {
-    window.addEventListener("unload", lightBeacon(), false);
-  }
-
-  // Set up tracking for navigations or Single-Page Applications (SPA). This
-  // ensures the script works with things like Gatsby and Next.js.
-  // This only works if the browser supports pushState.
-  if (window.history && window.history.pushState) {
-    // Monkeypatch the push state function to also trigger a pageview.
-    const ps = window.history.pushState;
-    window.history.pushState = function () {
-      // Forward our calling context and arguments to the original pushState.
-      const ret = ps.apply(this, arguments);
-      pageview(1);
-      // Return the original value.
-      return ret;
-    };
-    // Also register pageviews when the page goes back.
-    window.onpopstate = function () {
-      pageview(1);
+    // Safari on iOS < 13 has issues with the Beacon API so we don't use it there.
+    if (typeof window.navigator.sendBeacon !== "undefined" &&
+      /ip(hone|ad)(.*)os\s([1-9]|1[0-2])_/i.test(window.navigator.userAgent) === false) {
+      window.addEventListener("unload", lightBeacon(), false);
     }
 
-  }
+    // Set up tracking for navigations or Single-Page Applications (SPA). This
+    // ensures the script works with things like Gatsby and Next.js.
+    // This only works if the browser supports pushState.
+    if (window.history && window.history.pushState) {
+      // Monkeypatch the push state function to also trigger a pageview.
+      const ps = window.history.pushState;
+      window.history.pushState = function () {
+        // Forward our calling context and arguments to the original pushState.
+        const ret = ps.apply(this, arguments);
+        pageview(1);
+        // Return the original value.
+        return ret;
+      };
+      // Also register pageviews when the page goes back.
+      window.onpopstate = function () {
+        pageview(1);
+      }
+    }
 
-  // After everything is set-up, record the initial pageview.
-  pageview();
+    // After everything is set-up, record the initial pageview.
+    pageview();
+  }
+  // If there is an error in any of our Javascript tracker then we fall back to
+  // tracking by asking the browser to load an image for us.
+  catch (e) {
+    warn(e.message);
+    // If available, we  include the error message for debugging.
+    new Image().src = endpoint + "image.gif" + (e.message ? "?error=" + encodeURIComponent(e.message) : "");
+  }
 }
 
 export default trackRequest;
