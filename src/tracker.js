@@ -128,6 +128,11 @@ function createTracker(window, endpoint) {
     lastPageView.timeOnPage = msToS(time(start + msHidden));
     start = time();
     msHidden = 0;
+
+    // Store the farthest point the user has scrolled to and restart measuring.
+    // Rounding to two decimals.
+    lastPageView.scroll = Math.round(scrollPos * 100) / 100;
+    scrollPos = 0;
   };
 
   // Whether we use the beacon API or immediately submit our pageviews.
@@ -135,6 +140,9 @@ function createTracker(window, endpoint) {
 
   // Set up our function that adds pageviews to our tracking payload.
   let lastPath;
+
+  // Store the scrollposition for the current pageview.
+  let scrollPos = 0;
 
   // Return the functions that can be used to manipulate our payload.
   return {
@@ -197,6 +205,22 @@ function createTracker(window, endpoint) {
       request.setRequestHeader("Content-Type", "text/plain; charset=UTF-8");
       request.send(JSON.stringify(payload));
     },
+    /**
+     * Update the scrollposition for the current pageview.
+     */
+    updateScrollPos: () => {
+      // Calculate the number of pixels that can be scrolled. This is the total
+      // length of the document minus what the user sees in the viewport at 0.
+      const scrollRange = (window.document.documentElement.scrollHeight - window.document.documentElement.clientHeight);
+      // Calculate how far the user has scrolled.
+      const scrollOffset = (window.document.documentElement.scrollTop + window.document.body.scrollTop);
+      // Calculate how far the user scrolled relative to the total scroll
+      // length.
+      const currentScrollPos = scrollOffset / scrollRange * 100;
+
+      // Only store the farthest the user has gone down a page.
+      scrollPos = Math.max(0, scrollPos, currentScrollPos);
+    }
   }
 }
 
@@ -225,7 +249,7 @@ function trackRequest(window, endpoint) {
   }
 
   try {
-    const {lightBeacon, pageview} = createTracker(window, endpoint);
+    const {lightBeacon, pageview, updateScrollPos} = createTracker(window, endpoint);
 
     // Safari on iOS < 13 has issues with the Beacon API so we don't use it there.
     if (typeof window.navigator.sendBeacon !== "undefined" &&
@@ -251,6 +275,10 @@ function trackRequest(window, endpoint) {
         pageview(1);
       }
     }
+
+    // Set up tracking of the scroll position. This can tell us how far the user
+    // has read through articles or viewed landing pages.
+    window.addEventListener("scroll", updateScrollPos, false);
 
     // After everything is set-up, record the initial pageview.
     pageview();
