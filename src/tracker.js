@@ -58,8 +58,8 @@ function time(since = 0) {
  * @return {number}
  *   The number of seconds.
  */
-function msToS(since = 0) {
-  return Math.round(time(since) / 1000);
+function msToS(ms) {
+  return Math.round(ms / 1000);
 }
 
 function createTracker(window, endpoint) {
@@ -102,6 +102,34 @@ function createTracker(window, endpoint) {
     pageviews: [],
   };
 
+  // Track how long the page was loaded but not visible to the user. This is
+  // needed to determine how long the user actually spent viewing the page.
+  let msHidden = 0;
+  let hiddenStart = 0;
+  window.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      hiddenStart = time();
+    }
+    else {
+      msHidden += time(hiddenStart);
+    }
+  }, false);
+
+  // Wrap up tracking for our latest pageview.
+  const finishPageView = () => {
+    // If there are no pageviews yet there's nothing to do.
+    if (!payload.pageviews.length) return;
+
+    // Use this opportunity to complete time tracking for our latest pageview.
+    const lastPageView = payload.pageviews[payload.pageviews.length - 1];
+
+    // Include the time spent hidden as an offset to our start so that it's
+    // not counted towards page view time.
+    lastPageView.timeOnPage = msToS(time(start + msHidden));
+    start = time();
+    msHidden = 0;
+  };
+
   // Whether we use the beacon API or immediately submit our pageviews.
   let useSendBeacon = false;
 
@@ -119,6 +147,8 @@ function createTracker(window, endpoint) {
     lightBeacon: () => {
       useSendBeacon = true;
       return () => {
+        finishPageView();
+
         // Timestamp our payload.
         payload.time = msToS(time());
 
@@ -146,6 +176,7 @@ function createTracker(window, endpoint) {
         time: msToS(time()),
       };
 
+      finishPageView();
       payload.pageviews.push(data);
 
       // If we use the beacon API then we're done now.
