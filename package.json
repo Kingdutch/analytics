@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "yarn dev",
+    "predev": "rm -r build && webpack --mode development",
     "dev": "run-p dev:*",
     "dev:watch": "webpack --watch --mode development",
     "dev:serve": "nodemon .",
