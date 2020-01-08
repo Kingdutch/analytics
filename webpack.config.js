@@ -1,4 +1,12 @@
 module.exports = {
+  entry: {
+    "public/hello": "./src/client/index.js",
+    "server": "./src/server/index.js",
+  },
+  output: {
+    filename: '[name].js',
+    path: __dirname + "/build",
+  },
   module: {
     rules: [
       {
