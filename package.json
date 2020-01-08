@@ -5,6 +5,9 @@
   "main": "build/server.js",
   "author": "Alexander Varwijk <git@alexandervarwijk.com>",
   "license": "MIT",
+  "dependencies": {
+    "koa": "^2.11.0"
+  },
   "scripts": {
     "start": "yarn dev",
     "dev": "run-p dev:*",
