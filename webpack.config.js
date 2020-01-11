@@ -1,4 +1,4 @@
-const { NormalModuleReplacementPlugin } = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 const shared = {
 
@@ -30,14 +30,12 @@ module.exports = [
   {
     ...shared,
     target: 'node',
+    externals: [nodeExternals()],
     entry: "./src/server/index.js",
     output: {
       filename: 'server.js',
       path: __dirname + "/build",
     },
-    plugins: [
-      new NormalModuleReplacementPlugin(/any-promise/, __dirname + '/src/server/Promise.js'),
-    ],
     module: {
       rules: [
         {
