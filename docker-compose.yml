@@ -7,8 +7,14 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
+      - DB_HOST=db
+      - DB_NAME=analytics
+      - DB_USER=root
+      - DB_PASS=root
     volumes:
       - ./:/home/node/app
+    links:
+      - db
     expose:
       - "3000"
     container_name: analytics_node
@@ -28,3 +34,19 @@ services:
       - "80"
     container_name: analytics_web
     network_mode: "bridge"
+
+  db:
+    image: mariadb:10
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=analytics
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306"
+    container_name: analytics_db
+    network_mode: "bridge"
+    command: mysqld --max_allowed_packet=16M
+
+volumes:
+  db_data:

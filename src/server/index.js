@@ -1,12 +1,8 @@
 import Hapi from '@hapi/hapi';
-import track from './controller/track';
+import { track, fallback } from './controller/track';
 
 const {
   PORT = 3000,
-  DB_HOST,
-  DB_NAME,
-  DB_USER,
-  DB_PASS,
 } = process.env;
 
 const init = async () => {
@@ -16,6 +12,7 @@ const init = async () => {
   });
 
   server.route(track);
+  server.route(fallback);
 
   await server.start();
   console.log('Server running on http://visit.alexandervarwijk.localhost');
