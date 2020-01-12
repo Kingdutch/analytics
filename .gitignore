@@ -6,3 +6,6 @@ build/
 
 # Ignore local configuration
 .env
+
+# Ignore server logs
+logs/
