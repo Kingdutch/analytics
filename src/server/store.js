@@ -1,3 +1,4 @@
+require('dotenv').config();
 import fastq from 'fastq';
 import mariadb from "mariadb";
 

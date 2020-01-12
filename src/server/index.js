@@ -1,8 +1,6 @@
-import { config as dotenv } from 'dotenv';
+require('dotenv').config();
 import Hapi from '@hapi/hapi';
 import { track, fallback } from './controller/track';
-
-dotenv();
 
 const {
   PORT = 3000,
