@@ -1,14 +1,18 @@
+import { config as dotenv } from 'dotenv';
 import Hapi from '@hapi/hapi';
 import { track, fallback } from './controller/track';
 
+dotenv();
+
 const {
   PORT = 3000,
+  HOST = '0.0.0.0',
 } = process.env;
 
 const init = async () => {
   const server = Hapi.server({
     port: PORT,
-    host: '0.0.0.0'
+    host: HOST,
   });
 
   server.route(track);

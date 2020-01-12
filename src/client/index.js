@@ -1,3 +1,3 @@
 import trackRequest from "./tracker";
 
-trackRequest(window, 'localhost');
+trackRequest(window, '//visit.alexandervarwijk.com');
