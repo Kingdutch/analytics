@@ -162,7 +162,7 @@ function createTracker(window, endpoint) {
 
         // Use the beacon API to submit our data to ensure navigation isn't
         // blocked while we make our request.
-        window.navigator.sendBeacon(endpoint + "post", JSON.stringify(payload));
+        window.navigator.sendBeacon(endpoint + "/post", JSON.stringify(payload));
       }
     },
     /**
@@ -288,7 +288,7 @@ function trackRequest(window, endpoint) {
   catch (e) {
     warn(e.message);
     // If available, we  include the error message for debugging.
-    new Image().src = endpoint + "image.gif" + (e.message ? "?error=" + encodeURIComponent(e.message) : "");
+    new Image().src = endpoint + "/image.gif" + (e.message ? "?error=" + encodeURIComponent(e.message) : "");
   }
 }
 
