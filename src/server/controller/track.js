@@ -17,9 +17,6 @@ const track = {
     // Add the user agent.
     payload.agent = request.headers['user-agent'];
 
-    console.log("Sending payload to worker");
-    console.log(payload);
-
     store(payload);
 
     return "Request tracked";

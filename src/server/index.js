@@ -17,7 +17,7 @@ const init = async () => {
   server.route(fallback);
 
   await server.start();
-  console.log('Server running on http://visit.alexandervarwijk.localhost');
+  console.log(`Server running on http://${HOST}`);
 };
 
 process.on('unhandledRejection', (err) => {

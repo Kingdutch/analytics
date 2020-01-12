@@ -52,9 +52,6 @@ function storePageviews(data, cb) {
     });
   });
 
-  console.log("Storing pageviews");
-  console.log(pageviews);
-
   dbPool.getConnection()
     .then(conn =>
       conn.batch(
