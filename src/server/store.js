@@ -16,6 +16,17 @@ const dbPool = mariadb.createPool({
   database: DB_NAME,
 });
 
+async function fetch() {
+  return dbPool.getConnection()
+    .then(conn =>
+      conn.query("SELECT * FROM `pageviews`;")
+        .then(rows => {
+          conn.release();
+          return rows;
+        })
+    );
+}
+
 /**
  * Normlises the pageviews and stores them to the database.
  *
@@ -69,4 +80,7 @@ function storePageviews(data, cb) {
 const queue = fastq(storePageviews,1);
 
 const store = queue.push.bind(queue);
-export default store;
+export {
+  fetch,
+  store,
+};

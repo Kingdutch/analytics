@@ -1,11 +1,27 @@
 require('dotenv').config();
 import Hapi from '@hapi/hapi';
+import Basic from '@hapi/basic';
+import Bcrypt from 'bcrypt';
 import { track, fallback } from './controller/track';
+import { pageviews } from "./controller/pageviews";
 
 const {
   PORT = 3000,
   HOST = '0.0.0.0',
+  USER,
+  PASS,
 } = process.env;
+
+const validate = async (request, username, password) => {
+  if (username !== USER) {
+    return { credentials: null, isValid: false };
+  }
+
+  const isValid = await Bcrypt.compare(password, PASS);
+  const credentials = { id: 1, name: USER };
+
+  return { isValid, credentials };
+};
 
 const init = async () => {
   const server = Hapi.server({
@@ -13,8 +29,12 @@ const init = async () => {
     host: HOST,
   });
 
+  await server.register(Basic);
+  server.auth.strategy('simple', 'basic', { validate });
+
   server.route(track);
   server.route(fallback);
+  server.route(pageviews);
 
   await server.start();
   console.log(`Server running on http://${HOST}`);

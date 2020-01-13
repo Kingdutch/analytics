@@ -1,5 +1,5 @@
 import Joi from '@hapi/joi';
-import store from '../store';
+import { store } from '../store';
 
 const track = {
   method: 'POST',

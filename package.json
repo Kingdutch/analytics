@@ -6,15 +6,18 @@
   "author": "Alexander Varwijk <git@alexandervarwijk.com>",
   "license": "MIT",
   "dependencies": {
+    "@hapi/basic": "^6.0.0",
     "@hapi/hapi": "^19.0.2",
     "@hapi/joi": "^17.0.2",
+    "bcrypt": "^3.0.7",
     "dotenv": "^8.2.0",
     "fastq": "^1.6.0",
     "mariadb": "^2.1.5"
   },
   "scripts": {
+    "prestart": "yarn install",
     "start": "yarn dev",
-    "predev": "rm -r build && webpack --mode development",
+    "predev": "rm -rf build/* && webpack --mode development",
     "dev": "run-p dev:*",
     "dev:watch": "webpack --watch --mode development",
     "dev:serve": "nodemon .",
