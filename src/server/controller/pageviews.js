@@ -7,7 +7,11 @@ const pageviews = {
     return fetch();
   },
   options: {
-    auth: 'simple'
+    auth: 'simple',
+    cors: {
+      origin: ['http://localhost', 'http://localhost:8000', 'https://*.alexandervarwijk.com', 'http://*.alexandervarwijk.localhost'],
+      credentials: true,
+    },
   },
 };
 
