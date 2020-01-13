@@ -8,17 +8,17 @@ import { pageviews } from "./controller/pageviews";
 const {
   PORT = 3000,
   HOST = '0.0.0.0',
-  USER,
-  PASS,
+  STATISTICS_USER,
+  STATISTICS_PASS,
 } = process.env;
 
 const validate = async (request, username, password) => {
-  if (username !== USER) {
+  if (username !== STATISTICS_USER) {
     return { credentials: null, isValid: false };
   }
 
-  const isValid = await Bcrypt.compare(password, PASS);
-  const credentials = { id: 1, name: USER };
+  const isValid = await Bcrypt.compare(password, STATISTICS_PASS);
+  const credentials = { id: 1, name: STATISTICS_USER };
 
   return { isValid, credentials };
 };
