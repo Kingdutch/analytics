@@ -150,11 +150,18 @@ function createTracker(window, endpoint) {
      * Puts the tracker in Beacon mode to send the pageviews at the end.
      *
      * @return {function(...[*]=)}
-     *   A function that should be passed to the unload event.
+     *   A function that should be passed to the pagehide or unload event.
      */
     lightBeacon: () => {
       useSendBeacon = true;
-      return () => {
+      return (event) => {
+        // Send the beacon only if the page is destructed, otherwise we're just
+        // unfocused which is already handled by visibility change tracking
+        // elsewhere. This most closely mimics the unload behaviour.
+        if (event.persisted) {
+          return;
+        }
+
         finishPageView();
 
         // Timestamp our payload.
@@ -254,7 +261,13 @@ function trackRequest(window, endpoint) {
     // Safari on iOS < 13 has issues with the Beacon API so we don't use it there.
     if (typeof window.navigator.sendBeacon !== "undefined" &&
       /ip(hone|ad)(.*)os\s([1-9]|1[0-2])_/i.test(window.navigator.userAgent) === false) {
-      window.addEventListener("unload", lightBeacon(), false);
+      // Use pagehide if the browser supports it, unload otherwise.
+      // See: https://webkit.org/blog/516/webkit-page-cache-ii-the-unload-event/
+      window.addEventListener(
+        "onpagehide" in window ? "pagehide" : "unload",
+        lightBeacon(),
+        false
+      );
     }
 
     // Set up tracking for navigations or Single-Page Applications (SPA). This
