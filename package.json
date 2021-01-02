@@ -7,11 +7,11 @@
   "license": "MIT",
   "dependencies": {
     "@hapi/basic": "^6.0.0",
-    "@hapi/hapi": "^19.0.2",
-    "@hapi/joi": "^17.0.2",
+    "@hapi/hapi": "^20.0.3",
     "bcrypt": "^3.0.7",
     "dotenv": "^8.2.0",
     "fastq": "^1.6.0",
+    "joi": "^17.3.0",
     "mariadb": "^2.1.5"
   },
   "scripts": {
