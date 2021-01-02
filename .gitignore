@@ -9,3 +9,6 @@ build/
 
 # Ignore server logs
 logs/
+
+# Ignore server backups
+backups/
