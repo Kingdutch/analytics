@@ -1,6 +1,6 @@
 {
   "name": "@alexandervarwijk.com/analytics",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple GPDR compliant analytics set-up",
   "main": "build/server.js",
   "author": "Alexander Varwijk <git@alexandervarwijk.com>",
